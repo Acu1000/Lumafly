@@ -26,6 +26,7 @@ namespace Scarab.ViewModels
         private string pathOriginalValue;
         
         public ReactiveCommand<Unit, Unit> ChangePath { get; }
+        public ReactiveCommand<Unit, Unit> SwapToAltPath { get; }
 
         public SettingsViewModel(ISettings settings, IModSource mods)
         {
@@ -34,6 +35,7 @@ namespace Scarab.ViewModels
             _mods = mods;
             
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
+            SwapToAltPath = ReactiveCommand.CreateFromTask(SwapToAltPathAsync);
 
             useCustomModlinksOriginalValue = _settings.UseCustomModlinks;
             pathOriginalValue = _settings.ManagedFolder;
@@ -122,6 +124,7 @@ namespace Scarab.ViewModels
         public string CacheSpaceTaken => string.Format(Resources.XAML_CacheDownloads_Explanation, _settings.CacheSpaceTaken);
         
         public string CurrentPath => _settings.ManagedFolder.Replace(@"\\", @"\");
+        public string AlternatePath => _settings.AlternateManagedFolder.Replace(@"\\", @"\");
 
         private string _customModlinksUri;
 
@@ -167,6 +170,21 @@ namespace Scarab.ViewModels
 
             await _mods.Reset();
             
+            RaisePropertyChanged(nameof(AskForReload));
+        }
+
+        public async Task SwapToAltPathAsync()
+        {
+            if (_settings.AlternateManagedFolder is null)
+                return;
+
+            string _temp = _settings.ManagedFolder ?? "";
+            _settings.ManagedFolder = _settings.AlternateManagedFolder;
+            _settings.AlternateManagedFolder = _temp;
+            _settings.Save();
+
+            await _mods.Reset();
+
             RaisePropertyChanged(nameof(AskForReload));
         }
     }

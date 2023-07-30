@@ -23,6 +23,7 @@ namespace Scarab
     public class Settings : ISettings
     {
         public string ManagedFolder { get; set; }
+        public string AlternateManagedFolder { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public AutoRemoveUnusedDepsOptions AutoRemoveUnusedDeps { get; set; } = AutoRemoveUnusedDepsOptions.Never;
@@ -91,6 +92,7 @@ namespace Scarab
         internal Settings(string path)
         {
             ManagedFolder = path;
+            AlternateManagedFolder = "";
             
             var culture = Thread.CurrentThread.CurrentUICulture;
             if (Enum.TryParse(culture.TwoLetterISOLanguageName, out SupportedLanguages preferredLanguage))
@@ -101,6 +103,7 @@ namespace Scarab
         public Settings()
         {
             ManagedFolder = null!;
+            AlternateManagedFolder = null!;
             AutoRemoveUnusedDeps = AutoRemoveUnusedDepsOptions.Never;
             PreferredLanguage = null;
             CacheDownloads = true;

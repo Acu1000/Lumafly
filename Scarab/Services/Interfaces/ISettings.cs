@@ -15,6 +15,7 @@ namespace Scarab.Interfaces
         string CacheSpaceTaken { get; }
 
         string ManagedFolder { get; set; }
+        string AlternateManagedFolder { get; set; }
         string CacheFolder { get; }
 
         bool RequiresWorkaroundClient { get; set; }
