@@ -5,7 +5,7 @@
             xmlns:views="clr-namespace:Scarab.Views"
             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
             xmlns:ext="clr-namespace:Scarab.Extensions"
-            d:DesignHeight="300"
+            d:DesignHeight="400"
             d:DesignWidth="600"
             x:DataType="viewModels:SettingsViewModel"
             x:CompileBindings="True"
@@ -21,22 +21,28 @@
 			Margin="0 15"
 			VerticalAlignment="Center"
 			Text="{ext:Localize XAML_GamePath}"/>
-		<TextBlock
+    <TextBlock
 			Grid.Column="0"
 			Grid.Row="1"
+			Margin="0 15"
+			VerticalAlignment="Center"
+			Text="Alternate Path"/>
+		<TextBlock
+			Grid.Column="0"
+			Grid.Row="2"
 			Margin="0 15"
 			Text="{ext:Localize XAML_WarnBeforeRemovingDependentMods}"
 			VerticalAlignment="Center"/>
 		<TextBlock
 			Grid.Column="0"
-			Grid.Row="2"
+			Grid.Row="3"
 			Margin="0 15"
 			Text="{ext:Localize XAML_UseCustomModlinks}"
 			VerticalAlignment="Center"/>
-		<!-- 3 reserved for custom modlinks text box -->
+		<!-- row 4 reserved for custom modlinks text box -->
 		<StackPanel
 			Grid.Column="0"
-			Grid.Row="4"
+			Grid.Row="5"
 			VerticalAlignment="Center"
 			Orientation="Horizontal"
 			Margin="0 15">
@@ -55,13 +61,13 @@
 		
 		<TextBlock
 			Grid.Column="0"
-			Grid.Row="5"
+			Grid.Row="6"
 			Margin="0 15"
 			Text="{ext:Localize XAML_AutoRemoveDeps}"
 			VerticalAlignment="Center"/>
 		<TextBlock
 			Grid.Column="0"
-			Grid.Row="6"
+			Grid.Row="7"
 			Margin="0 15"
 			Text="{ext:Localize XAML_Language}"
 			VerticalAlignment="Center"/>
@@ -70,6 +76,15 @@
 			Grid.Column="1"
 			Grid.Row="0"
 			Text="{Binding CurrentPath}"
+			AcceptsReturn="False"
+			IsReadOnly="True"
+			Margin="10 0 5 0"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Center"/>
+    <TextBox
+			Grid.Column="1"
+			Grid.Row="1"
+			Text="Alternate Path"
 			AcceptsReturn="False"
 			IsReadOnly="True"
 			Margin="10 0 5 0"
@@ -86,10 +101,20 @@
 			Margin="5 0"
 			Command="{Binding ChangePath}"
 			Content="{ext:Localize XAML_ChangPath}"/>
+    <Button
+			Grid.Column="2"
+			Grid.Row="1"
+			Padding="20 5"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Center"
+			HorizontalContentAlignment="Center"
+			Margin="5 0"
+			Command="{Binding ChangePath}"
+			Content="Swap"/>
 		
 		<ToggleSwitch
 			Grid.Column="1"
-			Grid.Row="1"
+			Grid.Row="2"
 			Margin="10 0 5 0"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Center"
@@ -99,7 +124,7 @@
 		
 		<ToggleSwitch
 			Grid.Column="1"
-			Grid.Row="2"
+			Grid.Row="3"
 			Margin="10 0 5 0"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Center"
@@ -110,7 +135,7 @@
 		<TextBox
 			Grid.Column="0"
 			Grid.ColumnSpan="2"
-			Grid.Row="3"
+			Grid.Row="4"
 			Margin="0 0 5 15"
 			IsVisible="{Binding UseCustomModlinks}"
 			HorizontalAlignment="Stretch"
@@ -121,7 +146,7 @@
 		
 		<ToggleSwitch
 			Grid.Column="1"
-			Grid.Row="4"
+			Grid.Row="5"
 			Margin="10 0 5 0"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Center"
@@ -132,7 +157,7 @@
 		
 		<PathIcon
 			Grid.Column="2"
-			Grid.Row="3"
+			Grid.Row="4"
 			Data="{StaticResource info_regular}"
 			FontSize="15"
 			HorizontalAlignment="Left"
@@ -143,7 +168,7 @@
 		
 		<ComboBox
 			Grid.Column="1"
-			Grid.Row="5"
+			Grid.Row="6"
 			Margin="10 0 5 0"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Center"
@@ -153,7 +178,7 @@
 		
 		<ComboBox
 			Grid.Column="1"
-			Grid.Row="6"
+			Grid.Row="7"
 			Margin="10 0 5 0"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Center"
@@ -163,7 +188,7 @@
 		
 		<Button
 			Grid.Column="2"
-			Grid.Row="7"
+			Grid.Row="8"
 			Padding="20 5"
 			HorizontalAlignment="Right"
 			VerticalAlignment="Bottom"
@@ -173,7 +198,7 @@
 		
 		<TextBlock
 				Grid.Column="1"
-				Grid.Row="7"
+				Grid.Row="8"
 				IsVisible="{Binding AskForReload}"
 				FontSize="10"
 				VerticalAlignment="Bottom"
