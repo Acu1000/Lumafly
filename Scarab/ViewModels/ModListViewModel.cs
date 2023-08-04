@@ -12,8 +12,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using MessageBox.Avalonia.DTO;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
@@ -117,7 +116,10 @@ namespace Scarab.ViewModels
             ManuallyInstallMod = ReactiveCommand.CreateFromTask(ManuallyInstallModAsync);
             Trace.WriteLine("Reactive commands created");
 
-            HashSet<string> tagsInModlinks = new();
+            HashSet<string> tagsInModlinks = new()
+            {
+                "Untagged"
+            };
             HashSet<string> authorsInModlinks = new();
             foreach (var mod in _items)
             {
@@ -191,11 +193,12 @@ namespace Scarab.ViewModels
                     bool isCustomInstall = url != null;
                     bool isModlinksMod = true;
                     string? originalUrl = null;
+                    string? originalSha = null;
 
                     var correspondingMod = _items.FirstOrDefault(x => x.Name == modName);
                     
                     // delete the corresponding mod if a custom link is provided
-                    if (isCustomInstall && correspondingMod != null)
+                    if (isCustomInstall && correspondingMod != null && correspondingMod.State is ExistsModState)
                         await InternalModDownload(correspondingMod, correspondingMod.OnInstall);
 
                     // re get the corresponding mod because the mod might have been manually installed and hence when uninstalled removed from list
@@ -222,9 +225,11 @@ namespace Scarab.ViewModels
                     {
                         isModlinksMod = true;
                         originalUrl = correspondingMod.Link;
+                        originalSha = correspondingMod.Sha256;
                         if (isCustomInstall)
                         {
                             correspondingMod.Link = url ?? correspondingMod.Link; // replace with custom link if it exists
+                            correspondingMod.Sha256 = ""; // remove the sha so it can skip hash check
                             
                             // change the state from NotInModLinksState to NotInModlinks so it can skip hash check
                             correspondingMod.State = new NotInModLinksState(ModlinksMod: true);
@@ -249,6 +254,7 @@ namespace Scarab.ViewModels
                     if (isCustomInstall)
                     {
                         correspondingMod.Link = originalUrl ?? "";
+                        correspondingMod.Sha256 = originalSha ?? "";
                         if (correspondingMod.State is ExistsModState state)
                         {
                             correspondingMod.State = new NotInModLinksState(
@@ -473,6 +479,14 @@ namespace Scarab.ViewModels
                     await DisplayErrors.HandleIOExceptionWhenDownloading(io, $"{Resources.MVVM_Install} API");
                     return false;
                 }
+                catch (UnauthorizedAccessException ua)
+                {
+                    await DisplayErrors.AskForAdminReload($"Scarab failed to {Resources.MVVM_Install} API");
+                    
+                    // if not restarted then handle as normal exception
+                    await DisplayErrors.DisplayGenericError(Resources.MVVM_Install, "API", ua);
+                    return false;
+                }
                 catch (Exception e)
                 {
                     await DisplayErrors.DisplayGenericError(Resources.MVVM_Install, "API", e);
@@ -590,8 +604,10 @@ namespace Scarab.ViewModels
             {
                 SelectedItems = SelectedItems
                     .Where(x => x.HasTags &&
-                                x.Tags.Any(tagsDefined => selectedTags
-                                    .Any(tagsSelected => tagsSelected == tagsDefined)));
+                                x.Tags.Any(tagsDefined => selectedTags.Any(tagsSelected => tagsSelected == tagsDefined))
+                                || 
+                                !x.HasTags &&
+                                selectedTags.Contains("Untagged"));
             }
             if (selectedAuthors.Count > 0)
             {
@@ -650,7 +666,7 @@ namespace Scarab.ViewModels
                     continue;
 
                 if (!HasPinnedDependents(mod))
-                    await OnEnable(mod);
+                    await OnEnable(mod, false);
             }
 
             RaisePropertyChanged(nameof(CanDisableAll));
@@ -700,7 +716,8 @@ namespace Scarab.ViewModels
         /// its dependencies are installed
         /// </summary>
         /// <param name="itemObj">The mod to enable/disable</param>
-        public async Task OnEnable(object itemObj)
+        /// <param name="ignoreDependencies">Whether the dependency removal warning should be displayed (only applies when disabling)</param>
+        public async Task OnEnable(object itemObj, bool checkForDependencies = true)
         {
             var item = itemObj as ModItem ?? throw new Exception("Tried to enable an object which isn't a mod");
             try
@@ -713,7 +730,7 @@ namespace Scarab.ViewModels
                 {
                     var dependents = _reverseDependencySearch.GetAllEnabledDependents(item).ToList();
                     
-                    if (_settings.WarnBeforeRemovingDependents && dependents.Count > 0)
+                    if (_settings.WarnBeforeRemovingDependents && dependents.Count > 0 && checkForDependencies)
                     {
                         bool shouldContinue = await DisplayErrors.DisplayHasDependentsWarning(item.Name, dependents);
                         if (!shouldContinue)
@@ -751,6 +768,13 @@ namespace Scarab.ViewModels
             catch (IOException io)
             {
                 await DisplayErrors.HandleIOExceptionWhenDownloading(io, "toggle", item);
+            }
+            catch (UnauthorizedAccessException ua)
+            {
+                await DisplayErrors.AskForAdminReload($"Scarab failed to toggle {item}");
+                    
+                // if not restarted then handle as normal exception
+                await DisplayErrors.DisplayGenericError("toggling", ua);
             }
             catch (Exception e)
             {
@@ -842,6 +866,13 @@ namespace Scarab.ViewModels
             {
                 Trace.WriteLine($"Failed to install mod {item.Name}. State = {item.State}, Link = {item.Link}");
                 await DisplayErrors.HandleIOExceptionWhenDownloading(io, "installing or uninstalling", item);
+            }
+            catch (UnauthorizedAccessException ua)
+            {
+                await DisplayErrors.AskForAdminReload($"Scarab failed to download {item.Name}");
+                    
+                // if not restarted then handle as normal exception
+                await DisplayErrors.DisplayGenericError("installing or uninstalling", item.Name, ua);
             }
             catch (Exception e)
             {
@@ -1001,7 +1032,7 @@ namespace Scarab.ViewModels
                                 ModlinksMod: true,
                                 Enabled: true,
                                 Pinned:installedState.Pinned),
-                            NotInstalledState => new NotInModLinksState(ModlinksMod: false),
+                            NotInstalledState => new NotInModLinksState(ModlinksMod: true),
                             _ => throw new UnreachableException(),
                         };
 
@@ -1101,6 +1132,9 @@ namespace Scarab.ViewModels
                 : _settings.DisabledFolder;
 
             string mod_folder = Path.Combine(base_folder, item.Name);
+            
+            if (!Directory.Exists(mod_folder))
+                return;
 
             Process.Start(new ProcessStartInfo
             {
