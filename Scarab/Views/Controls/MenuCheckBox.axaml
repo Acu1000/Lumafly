@@ -47,7 +47,7 @@
                       Name="ExcludeButton"
                       Grid.Column="2"
                       Height="20" Width="20"
-                      IsVisible="{Binding IsExcludable}">
+                      IsVisible="{TemplateBinding IsExcludable}">
                   
                   </Button>
                 </Grid>
