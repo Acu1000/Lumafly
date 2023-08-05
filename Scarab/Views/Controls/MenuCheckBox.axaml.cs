@@ -25,7 +25,7 @@ public class MenuCheckBox : TemplatedControl
         base.OnApplyTemplate(e);
 
         SelectableButton = e.NameScope.Find<Button>(nameof(SelectableButton));
-        
+
         InternalOnPress = ReactiveCommand.Create(() =>
         {
             IsSelected = !IsSelected;
@@ -82,6 +82,25 @@ public class MenuCheckBox : TemplatedControl
         }
     }
 
+    #endregion
+
+    #region IsExcludable
+    private bool _isExcludable;
+
+    public static readonly DirectProperty<MenuCheckBox, bool> IsExcludableProperty = AvaloniaProperty.RegisterDirect<MenuCheckBox, bool>(
+        "IsExcludable", o => o.IsExcludable, (o, v) => o.IsExcludable = v, defaultBindingMode: BindingMode.OneWay);
+
+    public bool IsExcludable
+    {
+        get => _isExcludable;
+        set
+        {
+            SetAndRaise(IsExcludableProperty, ref _isExcludable, value);
+            _isExcludable = value;
+            if (_initialized)
+                SetButtonColors();
+        }
+    }
     #endregion
 
     #region InternalOnPress

@@ -2,7 +2,7 @@
 
 namespace Scarab.Models
 {
-    public record SelectableItem<T>(T Item, string DisplayName, bool IsSelected, bool IsExcluded=false) : INotifyPropertyChanged
+    public record SelectableItem<T>(T Item, string DisplayName, bool IsSelected, bool IsExcluded=false, bool IsExcludable=false) : INotifyPropertyChanged
     {
         private bool _isSelected = IsSelected;
         private bool _isExcluded = IsExcluded;

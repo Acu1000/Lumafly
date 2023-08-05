@@ -19,7 +19,7 @@
                     <Button 
                         Name="SelectableButton"
                         Grid.Column="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="3"
                         BorderThickness="0"
                         HorizontalContentAlignment="Left"
                         Command="{TemplateBinding InternalOnPress}">
@@ -46,7 +46,8 @@
                   <Button
                       Name="ExcludeButton"
                       Grid.Column="2"
-                      Height="20" Width="20">
+                      Height="20" Width="20"
+                      IsVisible="{Binding IsExcludable}">
                   
                   </Button>
                 </Grid>

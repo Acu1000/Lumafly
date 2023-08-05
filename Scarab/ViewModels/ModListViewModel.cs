@@ -131,13 +131,17 @@ namespace Scarab.ViewModels
                 new SelectableItem<string>(
                     x,
                     GetTagLocalizedName(x),
-                    false)));
+                    false,
+                    false,
+                    true)));
 
             AuthorList = new SortableObservableCollection<SelectableItem<string>>(authorsInModlinks.Select(x => 
                 new SelectableItem<string>(
                     x, 
                     x,
-                    false)));
+                    false,
+                    false,
+                    true)));
             
             TagList.SortBy(AlphabeticalSelectableItem);
             AuthorList.SortBy(AlphabeticalSelectableItem);
