@@ -64,7 +64,26 @@ public class MenuCheckBox : TemplatedControl
         }
     }
     #endregion
-    
+
+    #region IsExcluded
+    private bool _isExcluded;
+
+    public static readonly DirectProperty<MenuCheckBox, bool> IsExcludedProperty = AvaloniaProperty.RegisterDirect<MenuCheckBox, bool>(
+        "IsExcluded", o => o.IsExcluded, (o, v) => o.IsExcluded = v, defaultBindingMode: BindingMode.TwoWay);
+
+    public bool IsExcluded
+    {
+        get => _isExcluded;
+        set
+        {
+            SetAndRaise(IsExcludedProperty, ref _isExcluded, value);
+            if (_initialized)
+                SetButtonColors();
+        }
+    }
+
+    #endregion
+
     #region InternalOnPress
     private ICommand? _internalOnPress;
 

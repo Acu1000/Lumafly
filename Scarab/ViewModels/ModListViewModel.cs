@@ -578,11 +578,13 @@ namespace Scarab.ViewModels
 
             var selectedTags = TagList
                 .Where(x => x.IsSelected)
+                .Where(x => !x.IsExcluded)
                 .Select(x => x.Item)
                 .ToList();
             
             var selectedAuthors = AuthorList
                 .Where(x => x.IsSelected)
+                .Where(x => !x.IsExcluded)
                 .Select(x => x.Item)
                 .ToList();
 

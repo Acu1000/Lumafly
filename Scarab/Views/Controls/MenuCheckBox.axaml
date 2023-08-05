@@ -13,7 +13,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid 
-                    ColumnDefinitions="*, Auto"
+                    ColumnDefinitions="*, Auto, Auto"
                     HorizontalAlignment="Stretch"
                     Margin="{TemplateBinding Margin}">
                     <Button 
@@ -43,6 +43,12 @@
                         Margin="0 0 5 0"
                         Data="{StaticResource checkmark_regular}"
                         IsVisible="{TemplateBinding IsSelected}"/>
+                  <Button
+                      Name="ExcludeButton"
+                      Grid.Column="2"
+                      Height="20" Width="20">
+                  
+                  </Button>
                 </Grid>
             </ControlTemplate>
         </Setter>
