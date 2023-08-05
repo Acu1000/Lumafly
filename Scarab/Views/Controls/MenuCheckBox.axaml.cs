@@ -88,7 +88,7 @@ public class MenuCheckBox : TemplatedControl
     private bool _isExcludable;
 
     public static readonly DirectProperty<MenuCheckBox, bool> IsExcludableProperty = AvaloniaProperty.RegisterDirect<MenuCheckBox, bool>(
-        "IsExcludable", o => o.IsExcludable, (o, v) => o.IsExcludable = v, defaultBindingMode: BindingMode.OneWay);
+        "IsExcludable", o => o.IsExcludable, (o, v) => o.IsExcludable = v, defaultBindingMode: BindingMode.TwoWay);
 
     public bool IsExcludable
     {
@@ -96,7 +96,7 @@ public class MenuCheckBox : TemplatedControl
         set
         {
             SetAndRaise(IsExcludableProperty, ref _isExcludable, value);
-            _isExcludable = value;
+            //_isExcludable = value;
             if (_initialized)
                 SetButtonColors();
         }

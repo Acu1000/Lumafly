@@ -6,6 +6,7 @@ namespace Scarab.Models
     {
         private bool _isSelected = IsSelected;
         private bool _isExcluded = IsExcluded;
+        private bool _isExcludable = IsExcludable;
 
         public bool IsSelected 
         { 
@@ -24,6 +25,15 @@ namespace Scarab.Models
             {
                 _isExcluded = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsExcluded)));
+            }
+        }
+        public bool IsExcludable
+        {
+            get => _isExcludable;
+            set
+            {
+                _isExcludable = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsExcludable)));
             }
         }
 
